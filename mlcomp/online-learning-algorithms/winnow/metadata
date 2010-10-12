@@ -1,0 +1,4 @@
+name: winnow
+construct:
+task: OnlineLearningMulticlass
+description: Simple winnow algorithm for online learning multiclass classification.

@@ -5,7 +5,7 @@ import util
 
 weights = {}
 legalLabels = []
-learningrate = 1
+learningrate=1
 numupdates = 0
 
 def initialize():

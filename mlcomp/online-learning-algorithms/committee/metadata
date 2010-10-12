@@ -1,0 +1,4 @@
+name: committee
+construct:
+task: OnlineLearningMulticlass
+description: Committee algorithm for online learning multiclass classification, with simple winnow and simple perceptron as subexperts.
