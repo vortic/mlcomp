@@ -1,4 +1,0 @@
-name: online-perceptron
-construct:
-task: OnlineLearningMulticlass
-description: Simple perceptron for online learning multiclass classification.
