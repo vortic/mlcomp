@@ -2,45 +2,40 @@
 
 import sys
 import util
-import winnow
-import perceptron
 
-weights = util.Counter()
-numupdates = 0
-alpha = 1
-numsubs = 2
-subexperts = []
+weights = {}
 legalLabels = []
-
-def score(subex, data, label):
-    subpred = subex.classify(data)
-    return subpred[label]
+learningrate=1
+numupdates = 0
+c = 0.1
 
 def initialize():
     global legalLabels
     legalLabels = [1,]
-    subexperts.append(winnow.Winnow())
-    subexperts.append(perceptron.Perceptron())
-    for n in range(numsubs):
-        weights[n] = float(1)/numsubs
+    for l in legalLabels:
+        weights[l] = util.Counter()
 
 def classify(data):
     vectors = util.Counter()
-    for i in range(numsubs):
-        for l in legalLabels:
-            vectors[l] = weights[i] * score(subexperts[i], data, l)
+    for l in legalLabels:
+        vectors[l] = weights[l] * data
     return vectors.argMax()
 
 def update(label, guess, data):
-#simultaneously update subexpert and reliability
+    global numupdates
+    numupdates += 1
+    global learningrate
+    learningrate = float(1)/(numupdates**5)
     if guess != label:
         if not label in legalLabels:
             legalLabels.append(label)
-        for i in range(numsubs):
-            error = score(subexperts[i], data, label) - score(subexperts[i], data, guess)
-            subexperts[i].update(label, guess, data)
-            weights[i] = (alpha ** error) * weights[i]
-        weights.normalize()
+            weights[label] = util.Counter()
+        data.divideAll(1/float(learningrate))
+        tau = min(c, ((weights[bestGuessLabel] - weights[label]) * data + 1.0) / (2 * (data * data)))
+        scaledData = data.copy()
+        scaledData.divideAll(1.0 / tau)
+        weights[label] += scaledData
+        weights[guess] -= scaledData
 
 
 sys.stderr.write('Started')

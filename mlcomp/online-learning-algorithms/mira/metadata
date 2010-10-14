@@ -1,0 +1,4 @@
+name: online-mira
+construct:
+task: OnlineLearningMulticlass
+description: Simple MIRA perceptron for online learning multiclass classification.
