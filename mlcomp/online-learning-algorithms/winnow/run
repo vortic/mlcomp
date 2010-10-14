@@ -40,7 +40,7 @@ while (line):
     
     c = util.Counter()
     for feature, value in [(n, y.strip()) for n, y in [x.split(":") for x in features_values]]:
-        c[int(feature)] = int(value)
+        c[int(feature)] = float(value)
 
     guess = classify(c)
     sys.stdout.write(str(guess) + "\n")
