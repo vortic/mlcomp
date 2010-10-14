@@ -24,7 +24,7 @@ def update(label, guess, data):
     global numupdates
     numupdates += 1
     global learningrate
-    learningrate = float(1)/(numupdates**5)
+    learningrate = float(1)/(numupdates**.5)
     if guess != label:
         if not label in legalLabels:
             legalLabels.append(label)

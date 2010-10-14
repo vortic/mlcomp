@@ -7,7 +7,7 @@ weights = {}
 legalLabels = []
 learningrate=1
 numupdates = 0
-c = 0.1
+c = 1
 
 def initialize():
     global legalLabels
@@ -25,17 +25,16 @@ def update(label, guess, data):
     global numupdates
     numupdates += 1
     global learningrate
-    learningrate = float(1)/(numupdates**5)
+    learningrate = float(1)/(numupdates**.5)
     if guess != label:
         if not label in legalLabels:
             legalLabels.append(label)
             weights[label] = util.Counter()
         data.divideAll(1/float(learningrate))
-        tau = min(c, ((weights[bestGuessLabel] - weights[label]) * data + 1.0) / (2 * (data * data)))
-        scaledData = data.copy()
-        scaledData.divideAll(1.0 / tau)
-        weights[label] += scaledData
-        weights[guess] -= scaledData
+        tau = min(c, ((weights[guess] - weights[label]) * data + 1.0) / (2 * (data * data)))
+        data.divideAll(1.0 / tau)
+        weights[label] += data
+        weights[guess] -= data
 
 
 sys.stderr.write('Started')
