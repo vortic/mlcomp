@@ -8,10 +8,11 @@ import java.util.*;
  * and open the template in the editor.
  */
 /**
- *
+ * Converts a given fraction of a given supervised learning dataset into unlabeled instances.
+ * 
  * @author Victor
  */
-public class SemiSuperviser {
+public class SupervisedDatasetToSemiSupervisedDatasetConverter {
     static List<String> lines = new ArrayList<String>();
 
     public static void main(String[] args) {

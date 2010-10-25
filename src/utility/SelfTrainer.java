@@ -8,17 +8,20 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- *
+ * Reduces semi-supervised learning to supervised learning
+ * by providing a wrapper to a supervised learning program.
+ * 
  * @author Victor
  */
-public class Superviser {
+public class SelfTrainer {
 
-    SemiSuperviser semiSuperviser = new SemiSuperviser();
+	SupervisedDatasetToSemiSupervisedDatasetConverter semiSuperviser
+		= new SupervisedDatasetToSemiSupervisedDatasetConverter();
     List<String> unlabeledInstances = new ArrayList<String>();
     List<String> labeledInstances = new ArrayList<String>();
     String programPath;
 
-    public Superviser() {
+    public SelfTrainer() {
         try {
             BufferedReader programFile = new BufferedReader(new FileReader("programPath"));
             try {
@@ -36,7 +39,7 @@ public class Superviser {
 
     public void train(String pathToTraining) {
         String[] args = {pathToTraining, "semiTrain"};
-        semiSuperviser.main(args);
+        SupervisedDatasetToSemiSupervisedDatasetConverter.main(args);
         try {
             BufferedReader training = new BufferedReader(new FileReader("semiTrain"));
             BufferedWriter labeled = new BufferedWriter(new FileWriter("newTrain"));
@@ -100,7 +103,7 @@ public class Superviser {
                 throw new RuntimeException(e);
             }
         } else {
-            Superviser superviser = new Superviser();
+            SelfTrainer superviser = new SelfTrainer();
             if (args[0].equals("learn")) {
                 superviser.train(args[1]);
             } else if (args[0].equals("predict")) {
