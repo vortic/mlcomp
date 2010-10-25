@@ -18,7 +18,7 @@ import datasetFormat.SparseLineAST;
 import functions.UnaryPredicate;
 
 /**
- * Interface for the MLcomp Semi-supervised learning domain.
+ * Interface for the MLcomp SemiSupervised learning domain.
  * 
  * @author Eugene Ma
  */

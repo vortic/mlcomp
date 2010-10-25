@@ -19,8 +19,12 @@ import functions.UnaryPredicate;
 
 /**
  * Represents a sparse encoding of an instance for MLcomp dataset formats
- * for BinaryClassification, MulticlassClassification, and Regression.
+ * such as those for BinaryClassification, MulticlassClassification, and Regression.
  * E.g., "-1 5:8 1:-3".
+ * The output can be any string;
+ * a validator (just a unary predicate) needs to be given to validate
+ * that the output is valid for the desired domain.
+ * For example, "u" is a valid output for an instance of the SemiSupervised learning domain.
  * 
  * @author Eugene Ma
  */
