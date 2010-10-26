@@ -269,7 +269,18 @@ public class RunForSemiSupervisedLearningDomain {
         try {
             BufferedReader dataShard = new BufferedReader(new FileReader(dataShardPath));
             BufferedReader predictions = new BufferedReader(new FileReader(predictionPath));
-            BufferedWriter status = new BufferedWriter(new FileWriter("status"));
+            
+            // Set up status file to append.
+            FileOutputStream outputStream;
+            try {
+                outputStream = new FileOutputStream(new File(gStatusFilename), true);
+            } catch (FileNotFoundException x) {
+                throw new RuntimeException(
+                        String.format("Cannot find the file \"%s\".", gStatusFilename));
+            }
+            final OutputStreamWriter outputWriter = new OutputStreamWriter(outputStream);
+            final BufferedWriter status = new BufferedWriter(outputWriter);
+            
             try {
                 String line = null;
                 List<String> correctLabels = new ArrayList<String>();
@@ -286,9 +297,9 @@ public class RunForSemiSupervisedLearningDomain {
                     predictedLabels.add(line);
                 }
                 if (correctLabels.size() == predictedLabels.size()) {
-                    double correct = 0.0;
-                    double incorrect = 0.0;
-                    double total = 0.0;
+                    int correct = 0;
+                    int incorrect = 0;
+                    int total = 0;
                     for (int i = 0; i < correctLabels.size(); i++) {
                         int correctLabel = Integer.parseInt(correctLabels.get(i));
                         int predictedLabel = Integer.parseInt(predictedLabels.get(i));
@@ -299,9 +310,10 @@ public class RunForSemiSupervisedLearningDomain {
                         }
                         total++;
                     }
+                    status.write("---\n");
                     status.write("numErrors: " + incorrect + "\n");
                     status.write("numExamples: " + total + "\n");
-                    status.write("errorRate: " + incorrect / total + "\n");
+                    status.write("errorRate: " + incorrect / (double) total + "\n");
                 }
             } finally {
                 dataShard.close();
