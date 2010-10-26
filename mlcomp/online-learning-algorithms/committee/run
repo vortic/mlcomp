@@ -4,11 +4,12 @@ import sys
 import util
 import winnow
 import perceptron
+import mira
 
 weights = util.Counter()
 numupdates = 0
 alpha = 1
-numsubs = 2
+numsubs = 3
 subexperts = []
 legalLabels = []
 
@@ -21,6 +22,7 @@ def initialize():
     legalLabels = [1,]
     subexperts.append(winnow.Winnow())
     subexperts.append(perceptron.Perceptron())
+    subexperts.append(mira.Mira())
     for n in range(numsubs):
         weights[n] = float(1)/numsubs
 
@@ -57,7 +59,10 @@ while (line):
     sys.stdout.write(str(guess) + "\n")
     sys.stdout.flush()
 
-    label = int(sys.stdin.readline().strip())
+    raw_label = sys.stdin.readline().strip()
 
-    update(label, guess, c)
+    if raw_label != "u":
+        label = int(raw_label)
+        update(label, guess, c)
+
     line = sys.stdin.readline()

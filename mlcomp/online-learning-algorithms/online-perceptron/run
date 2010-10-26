@@ -24,7 +24,7 @@ def update(label, guess, data):
     global numupdates
     numupdates += 1
     global learningrate
-    learningrate = float(1)/(numupdates**5)
+    learningrate = float(1)/(numupdates**.5)
     if guess != label:
         if not label in legalLabels:
             legalLabels.append(label)
@@ -48,7 +48,10 @@ while (line):
     sys.stdout.write(str(guess) + "\n")
     sys.stdout.flush()
 
-    label = int(sys.stdin.readline().strip())
+    raw_label = sys.stdin.readline().strip()
 
-    update(label, guess, c)
+    if raw_label != "u":
+        label = int(raw_label)
+        update(label, guess, c)
+
     line = sys.stdin.readline()
