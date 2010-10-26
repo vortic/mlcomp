@@ -25,7 +25,7 @@ public class SupervisedDatasetToSemiSupervisedDatasetConverter {
             try {
                 String line = null;
                 while ((line = contents.readLine()) != null) {
-                    System.out.println(line);
+//                    System.out.println(line);
                     lines.add(line);
                 }
                 System.out.println();
@@ -48,11 +48,11 @@ public class SupervisedDatasetToSemiSupervisedDatasetConverter {
                     }
                     
                     output.write(outLine + "\n");
-                    System.out.println(outLine);
+//                    System.out.println(outLine);
                     count++;
                 }
 
-                System.out.println("Unlabeled: " + relabeled + " out of: " + lines.size());
+//                System.out.println("Unlabeled: " + relabeled + " out of: " + lines.size());
             } finally {
                 contents.close();
                 output.close();
