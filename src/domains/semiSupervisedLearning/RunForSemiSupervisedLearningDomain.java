@@ -275,7 +275,12 @@ public class RunForSemiSupervisedLearningDomain {
                 List<String> correctLabels = new ArrayList<String>();
                 List<String> predictedLabels = new ArrayList<String>();
                 while ((line = dataShard.readLine()) != null) {
-                    correctLabels.add(line);
+                    int firstWhiteSpace = line.indexOf(" ");
+                    if (firstWhiteSpace == -1) {
+                        correctLabels.add(line);
+                    } else {
+                        correctLabels.add(line.substring(0, firstWhiteSpace));
+                    }
                 }
                 while ((line = predictions.readLine()) != null) {
                     predictedLabels.add(line);
