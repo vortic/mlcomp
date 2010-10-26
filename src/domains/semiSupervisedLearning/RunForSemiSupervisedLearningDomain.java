@@ -57,7 +57,7 @@ public class RunForSemiSupervisedLearningDomain {
 	public static void inspect(String[] args) {
 		if (args.length != 3) {
 			throw new RuntimeException("The datashard path must be the second argument, "
-					+ "and the \"train\" or \"test\" must be the third argument.");
+					+ "and \"train\" or \"test\" must be the third argument.");
 		}
 		else {
 			final String datasetPath = args[1];
@@ -255,15 +255,12 @@ public class RunForSemiSupervisedLearningDomain {
 	 */
 	protected static void stripLabels(String inDataShardPath, String outDataShardPath) {
 		try {
-			BufferedReader inDataShard = new BufferedReader(new FileReader(
-					inDataShardPath));
-			BufferedWriter outDataShard = new BufferedWriter(new FileWriter(
-					outDataShardPath));
+			BufferedReader inDataShard = new BufferedReader(new FileReader(inDataShardPath));
+			BufferedWriter outDataShard = new BufferedWriter(new FileWriter(outDataShardPath));
 			try {
 				String line = null;
 				while ((line = inDataShard.readLine()) != null) {
-					outDataShard.write("u" + line.substring(line.indexOf(" "))
-							+ "\n");
+					outDataShard.write("u" + line.substring(line.indexOf(" ")) + "\n");
 				}
 			} finally {
 				inDataShard.close();
@@ -294,7 +291,19 @@ public class RunForSemiSupervisedLearningDomain {
 		try {
 			BufferedReader dataShard = new BufferedReader(new FileReader(dataShardPath));
 			BufferedReader predictions = new BufferedReader(new FileReader(predictionPath));
-			BufferedWriter status = new BufferedWriter(new FileWriter("status"));
+			
+			// Set up the status file for appending.
+			FileOutputStream outputStream;
+			try {
+				outputStream = new FileOutputStream(new File(gStatusFilename), true);
+			}
+			catch (FileNotFoundException x) {
+				throw new RuntimeException(
+						String.format("Cannot find the file \"%s\".", gStatusFilename));
+			}
+			final OutputStreamWriter outputWriter = new OutputStreamWriter(outputStream);
+			BufferedWriter status = new BufferedWriter(outputWriter);
+			
 			try {
 				String line = null;
 				List<String> correctLabels = new ArrayList<String>();
