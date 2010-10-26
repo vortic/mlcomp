@@ -59,7 +59,10 @@ while (line):
     sys.stdout.write(str(guess) + "\n")
     sys.stdout.flush()
 
-    label = int(sys.stdin.readline().strip())
+    raw_label = sys.stdin.readline().strip()
 
-    update(label, guess, c)
+    if raw_label != "u":
+        label = int(raw_label)
+        update(label, guess, c)
+
     line = sys.stdin.readline()
