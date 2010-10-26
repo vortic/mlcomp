@@ -1,0 +1,66 @@
+## YAML Template.
+---
+name: SemiSupervisedMulticlass
+kind: supervised-learning
+taskDescription: |-
+    Takes a dataset with labelled and unlabelled instances and classifies using both types.
+datasetDescription: |-
+    Data consists of:
+    <pre>
+    label1 feature:value feature:value...
+    label2 feature:value feature:value...
+    label3 feature:value feature:value
+    ...
+    </pre>
+    Test data consists of:
+    <pre>
+    feature:value feature:value...
+    feature:value feature:value...
+    feature:value feature:value...
+    ...
+    </pre>
+    Predictions should be:
+    <pre>
+    label1
+    label2
+    label3
+    ...
+    </pre>
+sampleDataset: semisupervised-multiclass-sample
+utilsProgram: semisupervised-multiclass-utils
+evaluatorProgram: semisupervised-multiclass-utils
+datasetFields:
+  - name: "#train"
+    type: integer
+    value: train/numExamples
+    description: Number of training examples.
+  - name: "#test"
+    type: integer
+    value: test/numExamples
+    description: Number of test examples.
+  - name: "#labels"
+    type: integer
+    value: train/numLabels
+    description: Number of output classes (labels).
+runFields:
+  - name: Learn time
+    type: time
+    value: learn/time
+    description: Time to learn the model on training data.
+  - name: Train error
+    type: double
+    value: doTrain/evaluate/errorRate
+    description: Fraction of misclassified training examples.
+  - name: Predict train time
+    type: time
+    value: doTrain/predict/time
+    description: Time took to predict on the training set.
+  - name: Test error
+    type: double
+    value: doTest/evaluate/errorRate
+    description: Fraction of misclassified test examples.
+  - name: Predict test time
+    type: time
+    value: doTest/predict/time
+    description: Time to predict on the test set.
+errorFieldValue: doTest/evaluate/errorRate
