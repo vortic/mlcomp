@@ -111,26 +111,26 @@ public class RunForSemiSupervisedLearningDomain {
                         out.newLine();
 
                         // Number of instances
-                        out.write("numInstances: " + instancesToMaxFeatureIndex.getKey().size());
+                        out.write("numExamples: " + instancesToMaxFeatureIndex.getKey().size());
                         out.newLine();
 
                         if (datasetType.equals("train")) {
                             // Number of labeled instances
-                            out.write("numLabeledInstances: "
+                            out.write("numLabeledExamples: "
                                     + trainingSetOutputValidator.getNumLabeledInstances());
                             out.newLine();
 
                             // Number of unlabeled instances
-                            out.write("numUnlabeledInstances: "
+                            out.write("numUnlabeledExamples: "
                                     + trainingSetOutputValidator.getNumUnlabeledInstances());
                             out.newLine();
                         } else if (datasetType.equals("test")) {
                             // Number of labeled instances
-                            out.write("numLabeledInstances: " + instancesToMaxFeatureIndex.getKey().size());
+                            out.write("numLabeledExamples: " + instancesToMaxFeatureIndex.getKey().size());
                             out.newLine();
 
                             // Number of unlabeled instances
-                            out.write("numUnlabeledInstances: 0");
+                            out.write("numUnlabeledExamples: 0");
                             out.newLine();
                         } else {
                             throw new RuntimeException("All dataset types should be enumerated. "
@@ -237,9 +237,9 @@ public class RunForSemiSupervisedLearningDomain {
                 while ((line = inDataShard.readLine()) != null) {
                     int firstWhiteSpace = line.indexOf(" ");
                     if (firstWhiteSpace == -1) {
-                        outDataShard.write("u\n");
+                        outDataShard.write("0\n");
                     } else {
-                        outDataShard.write("u" + line.substring(firstWhiteSpace) + "\n");
+                        outDataShard.write("0" + line.substring(firstWhiteSpace) + "\n");
                     }
                 }
             } finally {
