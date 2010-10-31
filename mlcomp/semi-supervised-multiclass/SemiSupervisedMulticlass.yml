@@ -3,7 +3,7 @@
 name: SemiSupervisedMulticlass
 kind: supervised-learning
 taskDescription: |-
-    Takes a dataset with labelled and unlabelled instances and classifies using both types.
+    Takes a dataset with labeled and unlabeled instances and classifies using both types.
 datasetDescription: |-
     Data consists of:
     <pre>
@@ -26,9 +26,9 @@ datasetDescription: |-
     label3
     ...
     </pre>
-sampleDataset: semisupervised-multiclass-sample
-utilsProgram: semisupervised-multiclass-utils
-evaluatorProgram: semisupervised-multiclass-utils
+sampleDataset: semi-supervised-multiclass-sample
+utilsProgram: semi-supervised-multiclass-utils
+evaluatorProgram: semi-supervised-multiclass-utils
 datasetFields:
   - name: "#train"
     type: integer
