@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import datasetFormat.SparseLineAST;
-import functions.UnaryPredicate;
 
 /**
  * Interface for the MLcomp SemiSupervisedMulticlass domain.
@@ -25,7 +24,7 @@ import functions.UnaryPredicate;
 public class RunForSemiSupervisedLearningDomain {
 
 	public static final String gStatusFilename = "status";
-	public static final double gFractionOfTrainingInstances = 0.4;
+	public static final double gFractionOfLabeledInstancesForTraining = 0.4;
 
 	// *******************************************************************************
 	public static void main(String[] args) {
@@ -52,128 +51,64 @@ public class RunForSemiSupervisedLearningDomain {
 	public static void inspect(String[] args) {
 		if (args.length != 3) {
 			throw new RuntimeException(
-					"The datashard path must be the second argument, "
-							+ "and the \"train\" or \"test\" must be the third argument.");
+					"The datashard path must be the second argument.");
 		} else {
 			final String datasetPath = args[1];
-			final String datasetType = args[2];
 
 			// The output for instances is different for training and testing.
-			UnaryPredicate<String> outputValidator;
-			SparseLineAST.SemiSupervisedTrainingValidator trainingSetOutputValidator = null;
-			if (datasetType.equals("train")) {
-				outputValidator = trainingSetOutputValidator = new SparseLineAST.SemiSupervisedTrainingValidator(
-						new SparseLineAST.NumericValidator());
-			} else if (datasetType.equals("test")) {
-				outputValidator = new SparseLineAST.NumericValidator();
-			} else {
-				throw new RuntimeException(
-						String
-								.format(
-										"The dataset type must be \"train\" or \"test\", not \"%s\".",
-										datasetType));
-			}
+			final SparseLineAST.SemiSupervisedTrainingValidator outputValidator
+				= new SparseLineAST.SemiSupervisedTrainingValidator(
+					new SparseLineAST.NumericValidator());
 
 			try {
-				final Map.Entry<List<SparseLineAST>, Integer> instancesToMaxFeatureIndex = SparseLineAST
-						.parseSparseEncodingFromInputFilename(datasetPath,
-								outputValidator);
+				final Map.Entry<List<SparseLineAST>, Integer> instancesToMaxFeatureIndex
+					= SparseLineAST.parseSparseEncodingFromInputFilename(datasetPath, outputValidator);
 
-				boolean datasetConformsToFormatFlag = true;
+				// Output summary statistics to a status file.
 
-				// Need additional validation for training sets.
-				if (datasetType.equals("train")) {
-					if (!trainingSetOutputValidator.datasetIsValid()) {
-						datasetConformsToFormatFlag = false;
-						System.out
-								.println(String
-										.format(
-												"The datashard does not conform to the \"%s\" format.",
-												datasetType));
-					}
+				FileOutputStream outputStream;
+				try {
+					outputStream = new FileOutputStream(new File(gStatusFilename), true);
+				} catch (FileNotFoundException x) {
+					throw new RuntimeException(String.format("Cannot find the file \"%s\".", gStatusFilename));
+				}
+				final OutputStreamWriter outputWriter = new OutputStreamWriter(outputStream);
+				final BufferedWriter out = new BufferedWriter(outputWriter);
+
+				try {
+					// Document divider.
+					out.write("---");
+					out.newLine();
+
+					// Path.
+					out.write("path: " + datasetPath);
+					out.newLine();
+
+					// Number of instances
+					out.write("numExamples: " + instancesToMaxFeatureIndex.getKey().size());
+					out.newLine();
+
+					// Number of labeled instances
+					out.write("numLabeledExamples: " + outputValidator.getNumLabeledInstances());
+					out.newLine();
+
+					// Number of unlabeled instances
+					out.write("numUnlabeledExamples: " + outputValidator.getNumUnlabeledInstances());
+					out.newLine();
+
+					// Max feature index.
+					out.write("maxFeatureIndex: " + instancesToMaxFeatureIndex.getValue());
+					out.newLine();
+				} catch (IOException e) {
+					throw new RuntimeException(
+							String.format("An error occurred while writing to file \"%s\".", gStatusFilename));
 				}
 
-				if (datasetConformsToFormatFlag) {
-					// Output summary statistics to a status file.
-
-					FileOutputStream outputStream;
-					try {
-						outputStream = new FileOutputStream(new File(
-								gStatusFilename), true);
-					} catch (FileNotFoundException x) {
-						throw new RuntimeException(String
-								.format("Cannot find the file \"%s\".",
-										gStatusFilename));
-					}
-					final OutputStreamWriter outputWriter = new OutputStreamWriter(
-							outputStream);
-					final BufferedWriter out = new BufferedWriter(outputWriter);
-
-					try {
-						// Document divider.
-						out.write("---");
-						out.newLine();
-
-						// Path.
-						out.write("path: " + datasetPath);
-						out.newLine();
-
-						// Dataset type.
-						out.write("type: " + datasetType);
-						out.newLine();
-
-						// Number of instances
-						out.write("numExamples: "
-								+ instancesToMaxFeatureIndex.getKey().size());
-						out.newLine();
-
-						if (datasetType.equals("train")) {
-							// Number of labeled instances
-							out.write("numLabeledExamples: "
-									+ trainingSetOutputValidator
-											.getNumLabeledInstances());
-							out.newLine();
-
-							// Number of unlabeled instances
-							out.write("numUnlabeledExamples: "
-									+ trainingSetOutputValidator
-											.getNumUnlabeledInstances());
-							out.newLine();
-						} else if (datasetType.equals("test")) {
-							// Number of labeled instances
-							out.write("numLabeledExamples: "
-									+ instancesToMaxFeatureIndex.getKey()
-											.size());
-							out.newLine();
-
-							// Number of unlabeled instances
-							out.write("numUnlabeledExamples: 0");
-							out.newLine();
-						} else {
-							throw new RuntimeException(
-									"All dataset types should be enumerated. "
-											+ "Has the implementation changed?");
-						}
-
-						// Max feature index.
-						out.write("maxFeatureIndex: "
-								+ instancesToMaxFeatureIndex.getValue());
-						out.newLine();
-					} catch (IOException e) {
-						throw new RuntimeException(
-								String
-										.format(
-												"An error occurred while writing to file \"%s\".",
-												gStatusFilename));
-					}
-
-					try {
-						out.close();
-					} catch (IOException e) {
-						throw new RuntimeException(String.format(
-								"Error while closing the file \"%s\".",
-								gStatusFilename));
-					}
+				try {
+					out.close();
+				} catch (IOException e) {
+					throw new RuntimeException(
+							String.format("Error while closing the file \"%s\".", gStatusFilename));
 				}
 			} catch (RuntimeException x) {
 				// FIXME: Need to tell the difference between an error and not
@@ -199,21 +134,22 @@ public class RunForSemiSupervisedLearningDomain {
 			final String testDatashardPath = args[3];
 
 			// Parse the raw dataset.
-			final SparseLineAST.SemiSupervisedTrainingValidator outputValidator = new SparseLineAST.SemiSupervisedTrainingValidator(
+			final SparseLineAST.SemiSupervisedTrainingValidator outputValidator
+				= new SparseLineAST.SemiSupervisedTrainingValidator(
 					new SparseLineAST.NumericValidator());
-			final List<SparseLineAST> instances = SparseLineAST
-					.parseSparseEncodingFromInputFilename(rawDatashardPath,
-							outputValidator).getKey();
+			final List<SparseLineAST> instances
+				= SparseLineAST.parseSparseEncodingFromInputFilename(rawDatashardPath, outputValidator).getKey();
 
 			// Split the dataset into labeled and unlabeled instances.
-			final List<SparseLineAST> labeledInstances = new ArrayList<SparseLineAST>(
-					outputValidator.getNumLabeledInstances());
-			final List<SparseLineAST> unlabeledInstances = new ArrayList<SparseLineAST>(
-					outputValidator.getNumUnlabeledInstances());
+			final List<SparseLineAST> labeledInstances
+				= new ArrayList<SparseLineAST>(outputValidator.getNumLabeledInstances());
+			final List<SparseLineAST> unlabeledInstances
+				= new ArrayList<SparseLineAST>(outputValidator.getNumUnlabeledInstances());
 			for (SparseLineAST instance : instances) {
 				if (instance.getOutput().equals("u")) {
 					unlabeledInstances.add(instance);
-				} else {
+				}
+				else {
 					labeledInstances.add(instance);
 				}
 			}
@@ -222,12 +158,11 @@ public class RunForSemiSupervisedLearningDomain {
 
 			// Create the training and test sets.
 
-			// The labeled instances are split between the training and test
-			// sets.
+			// The labeled instances are split between the training and test sets.
 			final List<SparseLineAST> trainingSet = new ArrayList<SparseLineAST>();
 			final List<SparseLineAST> testSet = new ArrayList<SparseLineAST>();
-			final int firstTestIndex = (int) Math.floor(labeledInstances.size()
-					* gFractionOfTrainingInstances);
+			final int firstTestIndex
+				= (int) Math.floor(labeledInstances.size() * gFractionOfLabeledInstancesForTraining);
 			for (int i = 0; i < labeledInstances.size(); ++i) {
 				if (i < firstTestIndex) {
 					trainingSet.add(labeledInstances.get(i));
@@ -258,13 +193,10 @@ public class RunForSemiSupervisedLearningDomain {
 	 * 
 	 * @author Victor
 	 */
-	protected static void stripLabels(String inDataShardPath,
-			String outDataShardPath) {
+	protected static void stripLabels(String inDataShardPath, String outDataShardPath) {
 		try {
-			BufferedReader inDataShard = new BufferedReader(new FileReader(
-					inDataShardPath));
-			BufferedWriter outDataShard = new BufferedWriter(new FileWriter(
-					outDataShardPath));
+			BufferedReader inDataShard = new BufferedReader(new FileReader(inDataShardPath));
+			BufferedWriter outDataShard = new BufferedWriter(new FileWriter(outDataShardPath));
 			try {
 				String line = null;
 				while ((line = inDataShard.readLine()) != null) {
@@ -272,8 +204,7 @@ public class RunForSemiSupervisedLearningDomain {
 					if (firstWhiteSpace == -1) {
 						outDataShard.write("0\n");
 					} else {
-						outDataShard.write("0"
-								+ line.substring(firstWhiteSpace) + "\n");
+						outDataShard.write("0" + line.substring(firstWhiteSpace) + "\n");
 					}
 				}
 			} finally {
@@ -302,10 +233,8 @@ public class RunForSemiSupervisedLearningDomain {
 	 */
 	protected static void evaluate(String dataShardPath, String predictionPath) {
 		try {
-			BufferedReader dataShard = new BufferedReader(new FileReader(
-					dataShardPath));
-			BufferedReader predictions = new BufferedReader(new FileReader(
-					predictionPath));
+			BufferedReader dataShard = new BufferedReader(new FileReader(dataShardPath));
+			BufferedReader predictions = new BufferedReader(new FileReader(predictionPath));
 
 			// Set up status file to append.
 			FileOutputStream outputStream;
@@ -316,8 +245,7 @@ public class RunForSemiSupervisedLearningDomain {
 				throw new RuntimeException(String.format(
 						"Cannot find the file \"%s\".", gStatusFilename));
 			}
-			final OutputStreamWriter outputWriter = new OutputStreamWriter(
-					outputStream);
+			final OutputStreamWriter outputWriter = new OutputStreamWriter(outputStream);
 			final BufferedWriter status = new BufferedWriter(outputWriter);
 
 			try {
@@ -340,10 +268,8 @@ public class RunForSemiSupervisedLearningDomain {
 					int incorrect = 0;
 					int total = 0;
 					for (int i = 0; i < correctLabels.size(); i++) {
-						int correctLabel = Integer.parseInt(correctLabels
-								.get(i));
-						int predictedLabel = Integer.parseInt(predictedLabels
-								.get(i));
+						int correctLabel = Integer.parseInt(correctLabels.get(i));
+						int predictedLabel = Integer.parseInt(predictedLabels.get(i));
 						if (correctLabel == predictedLabel) {
 							correct++;
 						} else {
@@ -354,8 +280,7 @@ public class RunForSemiSupervisedLearningDomain {
 					status.write("---\n");
 					status.write("numErrors: " + incorrect + "\n");
 					status.write("numExamples: " + total + "\n");
-					status.write("errorRate: " + incorrect / (double) total
-							+ "\n");
+					status.write("errorRate: " + incorrect / (double) total + "\n");
 				}
 			} finally {
 				dataShard.close();
