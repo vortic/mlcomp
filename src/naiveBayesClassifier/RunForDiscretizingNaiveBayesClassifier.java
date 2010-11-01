@@ -25,8 +25,8 @@ import edu.berkeley.nlp.util.Pair;
  * @author Eugene Ma
  */
 public class RunForDiscretizingNaiveBayesClassifier {
-	private static final String gHyperparameterFilename = "hyperparameter";
-	private static final String gLearnedModelFilename = "learnedModel.ser";
+	protected static final String gHyperparameterFilename = "hyperparameter";
+	protected static final String gLearnedModelFilename = "learnedModel.ser";
 	
 	// *******************************************************************************
 
@@ -64,7 +64,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 	
 	// *******************************************************************************
 
-	private static void setHyperparameter(String[] args) {
+	protected static void setHyperparameter(String[] args) {
 		if (args.length != 2) {
 			System.out.println("Please specify the hyperparameter value as the second argument.");
 		}
@@ -104,7 +104,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 	
 	// *******************************************************************************
 
-	private static void learn(String[] args) {
+	protected static void learn(String[] args) {
 		if (args.length != 2) {
 			System.out.println("Please specify the path for the training data as the second argument.");
 		}
@@ -143,7 +143,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 
 	// *******************************************************************************
 
-	private static void semiSupervisedLearn(String[] args) {
+	protected static void semiSupervisedLearn(String[] args) {
 		if (args.length < 2) {
 			System.out.println("Please specify the path for the training data as the second argument.");
 		}
@@ -185,7 +185,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 
 	// *******************************************************************************
 
-	private static void randomLearn(String[] args) {
+	protected static void randomLearn(String[] args) {
 		if (args.length != 3) {
 			System.out.println("Please specify the number of classes as the second argument "
 					+ "and the number of features as the third argument.");
@@ -208,7 +208,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 
 	// *******************************************************************************
 
-	private static void generate(String[] args) {
+	protected static void generate(String[] args) {
 		if (args.length != 3) {
 			System.out.println("Please specify the number of instances as the second argument "
 					+ "and the path to save the instances as the third argument.");
@@ -228,7 +228,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 
 	// *******************************************************************************
 
-	private static void predict(String[] args) {
+	protected static void predict(String[] args) {
 		if (args.length != 3) {
 			System.out.println("Please specify the path for the test data as the second argument "
 					+ "and the path to save the predictions as the third argument.");
@@ -277,7 +277,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 
 	// *******************************************************************************
 
-	private static Pair<Boolean, Double> getKForSmoothing() {
+	protected static Pair<Boolean, Double> getKForSmoothing() {
 		// Returns the hyperparameter (k for additive smoothing) loaded from file.
 		// If fail, return false and 0 for the hyperparameter.
 		
@@ -307,7 +307,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 		return new Pair<Boolean, Double>(false, 0.0);
 	}
 	
-	private static DiscretizingNaiveBayesClassifier.FileData loadTrainedModelFileData() {
+	protected static DiscretizingNaiveBayesClassifier.FileData loadTrainedModelFileData() {
 		// Load the trained model.
 		try {
 			// Try loading.
@@ -342,7 +342,7 @@ public class RunForDiscretizingNaiveBayesClassifier {
 		}
 	}
 	
-	private static void saveTrainedModelFileData(DiscretizingNaiveBayesClassifier.FileData fileData) {
+	protected static void saveTrainedModelFileData(DiscretizingNaiveBayesClassifier.FileData fileData) {
 		try {
 			FileOutputStream fileStream = new FileOutputStream(gLearnedModelFilename);
 			ObjectOutputStream os = new ObjectOutputStream(fileStream);
