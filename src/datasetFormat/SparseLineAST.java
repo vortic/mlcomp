@@ -140,9 +140,12 @@ public class SparseLineAST {
 		}
 		
 		public boolean datasetIsValid() {
+			return true;
+			
+			// FIXME: Use this?
 			// Only valid if there is at least one unlabeled instance
 			// and at least one labeled instance.
-			return myNumLabeledInstances > 0 && myNumUnlabeledInstances > 0;
+			//return myNumLabeledInstances > 0 && myNumUnlabeledInstances > 0;
 		}
 		
 		public int getNumLabeledInstances() {
@@ -410,5 +413,21 @@ public class SparseLineAST {
 			throw new RuntimeException(
 					String.format("Error while closing the file \"%s\".", outputFilename));
 		}
+	}
+	
+	// *******************************************************************************
+	
+	public static List<SparseLineAST> getLabeledInstances(List<SparseLineAST> instances) {
+		// Filters out the unlabeled instances (those labeled with "u").
+		
+		List<SparseLineAST> labeledInstances = new ArrayList<SparseLineAST>();
+		
+		for (SparseLineAST instance : instances) {
+			if (!instance.getOutput().equals("u")) {
+				labeledInstances.add(instance);
+			}
+		}
+		
+		return labeledInstances;
 	}
 }

@@ -113,11 +113,15 @@ public class RunForDiscretizingNaiveBayesClassifier {
 			
 			try {
 				// Parse the sparse training data.
-				final Map.Entry<List<SparseLineAST>, Integer> labeledInstancesToMaxFeatureIndex
+				// Note: "u" outputs for training instances are accepted; they'll just be ignored.
+				final Map.Entry<List<SparseLineAST>, Integer> instancesToMaxFeatureIndex
 					= SparseLineAST.parseSparseEncodingFromInputFilename(trainingDataFilename,
-							new SparseLineAST.NumericValidator());
-				final List<SparseLineAST> labeledInstances = labeledInstancesToMaxFeatureIndex.getKey();
-				final int maxFeatureIndex = labeledInstancesToMaxFeatureIndex.getValue();
+							new SparseLineAST.SemiSupervisedTrainingValidator(new SparseLineAST.NumericValidator()));
+				final List<SparseLineAST> instances = instancesToMaxFeatureIndex.getKey();
+				final int maxFeatureIndex = instancesToMaxFeatureIndex.getValue();
+				
+				// Ignore unlabeled instances.
+				final List<SparseLineAST> labeledInstances = SparseLineAST.getLabeledInstances(instances);
 				
 				// Initialize and train the classifier on the training data.
 				DiscretizingNaiveBayesClassifier classifier = new DiscretizingNaiveBayesClassifier();
