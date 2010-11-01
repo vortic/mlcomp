@@ -14,9 +14,9 @@ datasetDescription: |-
     </pre>
     Test data consists of:
     <pre>
-    feature:value feature:value...
-    feature:value feature:value...
-    feature:value feature:value...
+    label1 feature:value feature:value...
+    label2 feature:value feature:value...
+    label3 feature:value feature:value...
     ...
     </pre>
     Predictions should be:
@@ -30,10 +30,18 @@ sampleDataset: semi-supervised-multiclass-sample
 utilsProgram: semi-supervised-multiclass-utils
 evaluatorProgram: semi-supervised-multiclass-utils
 datasetFields:
-  - name: "#train"
+  - name: "#examples"
     type: integer
     value: train/numExamples
     description: Number of training examples.
+  - name: "#numLabeledExamples"
+    type: integer
+    value: train/numLabeledExamples
+    description: Number of labeled training examples.
+  - name: "#numUnlabeledExamples"
+    type: integer
+    value: train/numUnlabeledExamples
+    description: Number of unlabeled training examples.
   - name: "#test"
     type: integer
     value: test/numExamples
