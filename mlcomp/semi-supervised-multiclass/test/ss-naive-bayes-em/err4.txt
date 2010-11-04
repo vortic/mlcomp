@@ -1,0 +1,3 @@
+"learnedModel.ser" loaded.
+Hyperparameter value: 1.0E-4
+1778 of 2437 predicted correctly (0.729586).

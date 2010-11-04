@@ -1,0 +1,3 @@
+Loaded hyperparameter = 0.010000. Using k = 0.000100 for smoothing.
+Trained on 284 labeled instances.
+Learned model saved to "learnedModel.ser".

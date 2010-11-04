@@ -145,7 +145,8 @@ public class RunForDiscretizingNaiveBayesClassifier {
 
 	protected static void semiSupervisedLearn(String[] args) {
 		if (args.length < 2) {
-			System.out.println("Please specify the path for the training data as the second argument.");
+			System.out.println("Please specify the path for the training data as the second argument. "
+					+ "(Optionally, you can give the number of EM iterations as the third argument.)");
 		}
 		else {
 			final String trainingDataFilename = args[1];
