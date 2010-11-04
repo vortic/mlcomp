@@ -1,0 +1,3 @@
+name: semi-supervised-multiclass-utils
+description: Utilities for SemiSupervisedMulticlass domain: checks the format of datasets, splits datasets into training and test sets, strips labels for testing, and evaluates performance.
+task: inspect split stripLabels evaluate

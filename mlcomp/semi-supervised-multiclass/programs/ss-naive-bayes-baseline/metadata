@@ -1,0 +1,3 @@
+name: semi-supervised-naive-bayes-baseline
+description: A baseline for semi-supervised learning: a Naive Bayes classifier trained by ignoring the unlabeled instances.
+task: SemiSupervisedMulticlass

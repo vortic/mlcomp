@@ -1,0 +1,26 @@
+- status 
+---
+path: semi-train
+numExamples: 15
+numLabeledExamples: 3
+numUnlabeledExamples: 12
+numLabels: 3
+maxFeatureIndex: 5
+---
+path: test
+numExamples: 5
+numLabeledExamples: 5
+numUnlabeledExamples: 0
+numLabels: 3
+maxFeatureIndex: 5
+---
+path: semi-raw
+numExamples: 20
+numLabeledExamples: 8
+numUnlabeledExamples: 12
+numLabels: 3
+maxFeatureIndex: 5
+---
+numErrors: 2
+numExamples: 5
+errorRate: 0.4

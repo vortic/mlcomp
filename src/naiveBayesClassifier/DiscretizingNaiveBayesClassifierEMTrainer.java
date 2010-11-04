@@ -23,7 +23,7 @@ public class DiscretizingNaiveBayesClassifierEMTrainer {
 		// Initialize the model from the labeled instances.
 		DiscretizingNaiveBayesClassifier classifier = new DiscretizingNaiveBayesClassifier();
 		classifier.initialize(kForSmoothing);
-		final List<SparseLineAST> labeledInstances = getLabeledInstances(instances);
+		final List<SparseLineAST> labeledInstances = SparseLineAST.getLabeledInstances(instances);
 		System.out.println(String.format("There are %d labeled instances.", labeledInstances.size()));
 		classifier.train(labeledInstances, maxFeatureIndex, featureValueDiscretizer);
 		
@@ -51,20 +51,6 @@ public class DiscretizingNaiveBayesClassifierEMTrainer {
 		}
 		
 		return classifier;
-	}
-	
-	public static List<SparseLineAST> getLabeledInstances(List<SparseLineAST> instances) {
-		// Filters out the unlabeled instances (those labeled with "u").
-		
-		List<SparseLineAST> labeledInstances = new ArrayList<SparseLineAST>();
-		
-		for (SparseLineAST instance : instances) {
-			if (!instance.getOutput().equals("u")) {
-				labeledInstances.add(instance);
-			}
-		}
-		
-		return labeledInstances;
 	}
 	
 	public static List<Counter<Integer>> getLabelDistributions(
