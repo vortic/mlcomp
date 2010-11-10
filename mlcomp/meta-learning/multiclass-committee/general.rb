@@ -265,12 +265,12 @@ def saveArgs; IO.writelines('args', ARGV) end
 def loadArgs(*types)
   parseArgsHelper(IO.readlines('args').map { |x| x.trim }, types)
 end
-def loagArgsMany()
+def loadArgsMany()
   ele = []
   types = []
   IO.readlines('args').each do |x|
-    ele.append(x.trim)
-    types.append(:program)
+    ele << x.trim
+    types << :program
   end
   parseArgsHelper(ele, types)
 end
