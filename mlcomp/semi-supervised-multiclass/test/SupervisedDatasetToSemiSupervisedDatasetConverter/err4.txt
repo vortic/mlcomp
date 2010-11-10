@@ -1,0 +1,4 @@
+Number of unlabeled kept: 3980
+Number of unlabeled discarded: 0
+Number of labeled: 1707
+Total: 5687

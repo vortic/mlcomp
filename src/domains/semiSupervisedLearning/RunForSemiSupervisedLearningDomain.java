@@ -35,7 +35,10 @@ public class RunForSemiSupervisedLearningDomain {
 		}
 		else {
 			final String command = args[0];
-			if (command.equals("inspect")) {
+			if (command.equals("construct")) {
+				// Do nothing.
+			}
+			else if (command.equals("inspect")) {
 				inspect(args);
 			}
 			else if (command.equals("split")) {

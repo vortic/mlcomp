@@ -1,5 +1,7 @@
 echo - status > status
 
+java -jar RunForSemiSupervisedLearningDomain.jar construct > err0.txt
+
 java -jar RunForSemiSupervisedLearningDomain.jar inspect semi-train > err1.txt
 java -jar RunForSemiSupervisedLearningDomain.jar inspect bad-semi-train1 > err2.txt
 java -jar RunForSemiSupervisedLearningDomain.jar inspect bad-semi-train2 > err3.txt
