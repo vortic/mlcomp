@@ -1,0 +1,132 @@
+#!/usr/bin/ruby
+
+require 'general'
+require 'util'
+
+"""
+./run construct multiclassLearner1 multiclassLearner2 ...
+./run learn trainshard
+./run predict testshard predPath
+"""
+
+#Ensemble learn on multiple multiclass algorithms using the committee algorithm
+cmd = ARGV.shift
+case cmd
+  when 'construct' then
+    saveArgs
+  when 'learn' then
+    #Load algorithms into an array
+    multiclass = loadArgsMany()
+    datashard, = parseArgs(:file)
+
+    #Interpret datashard
+    points = IO.readlinesClean(datashard).map { |line|
+      y, x = line.split(/ /, 2)
+      y = y.to_i
+      [x,y]
+    }
+
+    #Split datashard into train and validation
+    trainshard = "traindata"
+    validshard = "validdata"
+    numDat = points.size
+    puts "===== Ensemble Learning (Committee): Spliting data in to train and validation (7:3) ... ====="
+    (0..numDat).each { |i|
+      if i < numDat*0.7 then
+        IO.writelines(trainshard, points.map { |x,y| y.to_s + (x ? " " + x : "") })
+      else
+        IO.writelines(validshard, points.map { |x,y| y.to_s + (x ? " " + x : "") })
+      end
+    }
+    
+    #Train each multiclass learner
+    multiclass.each { |multiLearner|
+      puts "===== Ensemble Learning (Committee): training #{multiLearner} ====="
+
+      #run learn on training shard
+      exitIfFail("Learn_#{multiLearner}",
+               runProgram(multiLearner, 'learn', file(trainshard)))
+      puts
+    }
+
+    #Obtain predictions of each learner on validations data
+    weights = Counter.new()
+    predictions = Hash.new()
+    #Promotion amount
+    alpha = multiclass.size/2
+    #Initialize weights
+    multiclass.each { |multiLearner|
+      weights[multiLearner] = 1.0/multiclass.size
+    }
+    puts "===== Ensemble Learning (Committee): Training committee on validation data =====" 
+    #Obtain predictions on validation data
+    i = 0
+    multiclass.each { |multiLearner|
+      outPath = "_validation_#{i}"
+      exitIfFail("vali_#{multiLearner}",
+                 runProgram(multiLearner, 'predict', file(validshard), file(outPath)))
+      predictions[multiLearner] = IO.readlines(outPath).map { |v| v.to_i }
+      i = i + 1
+    }
+    #Obtain true labels
+    predictions[0] = IO.readlines(validshard).map { |line|
+      y, x = line.split(/ /, 2)
+      y.to_i 
+    }
+        
+    #Update weights
+    (0..(predictions[0].size-1)).each { |i|
+      vectors = Counter.new()
+      multiclass.each { |multiLearner|
+        vectors[predictions[multiLearner][i]] += weights[multiLearner]
+      }
+      guess = vectors.argMax()
+      if guess != predictions[0][i] then
+        multiclass.each { |multiLearner|
+          if predictions[multiLearner][i] == predictions[0][i] then
+            weights[multiLearner] *= alpha
+          end
+        }
+        weights.normalize()
+      end
+    }
+  
+    #Save Ensemble Weights
+    weightPath = "ensemble_weights"
+    File.open(weightPath, 'w+') do |f|
+      weightdump = Marshal.dump(weights, f)
+    end
+
+  when 'predict' then
+    multiclass = loadArgsMany()
+    inPath, outPath = parseArgs(:file, :nonexist)
+    weightPath = "ensemble_weights"
+    File.open(weightPath) do |f|
+    #Load ensemble weights to weights
+      weights = Marshal.load(f)
+    end
+
+    predictions = Hash.new()
+    #Obtain predictions on test data
+    i = 0
+    multiclass.each { |multiLearner|
+      multiPath = "_validation_#{i}"
+      exitIfFail("vali_#{multiLearner}",
+                 runProgram(multiLearner, 'predict', file(inPath), file(multiPath)))
+      predictions[multiLearner] = IO.readlines(multiPath).map { |v| v.to_i }
+      i = i+1
+    }
+
+    #Ensemble guess
+    ensemblePred = []
+    (0..(predictions[predictions.keys()[0]].size-1)).each { |i|
+      vectors = Counter.new()
+      multiclass.each { |multiLearner|
+        vectors[predictions[multiLearner][i]] += weights[multiLearner]
+      }
+      guess = sample(vectors)
+      ensemblePred << guess.to_s
+    }
+    IO.writelines(outPath, ensemblePred.map { |v| v })
+
+end
