@@ -29,6 +29,7 @@ public class RunForSemiSupervisedLearningDomain {
 	public static final double gFractionOfLabeledInstancesForTraining = 0.7;
 
 	// *******************************************************************************
+	
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			throw new RuntimeException("The arguments list must not be empty!");
@@ -57,6 +58,7 @@ public class RunForSemiSupervisedLearningDomain {
 	}
 
 	// *******************************************************************************
+	
 	public static void inspect(String[] args) {
 		if (args.length != 2) {
 			throw new RuntimeException("The datashard path must be the second argument. "
@@ -141,6 +143,7 @@ public class RunForSemiSupervisedLearningDomain {
 	}
 
 	// *******************************************************************************
+	
 	public static void split(String[] args) {
 		if (args.length != 4) {
 			throw new RuntimeException(
@@ -200,6 +203,7 @@ public class RunForSemiSupervisedLearningDomain {
 	}
 
 	// *******************************************************************************
+	
 	protected static void stripLabels(String[] args) {
 		if (args.length != 3) {
 			throw new RuntimeException(
