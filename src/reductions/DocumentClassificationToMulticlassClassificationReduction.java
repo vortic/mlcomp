@@ -173,7 +173,8 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 			// Set the hyperparameter of the MulticlassClassification classifier.
 			final String hyperparameter = args[1];
 			try {
-				String[] cmd = {"java", "-jar", state.multiclassClassifierFilename,
+				String[] cmd = {"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
+						"-jar", state.multiclassClassifierFilename,
 						"setHyperparameter", hyperparameter};
 				Runtime.getRuntime().exec(cmd).waitFor();
 			}
@@ -202,7 +203,8 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 			// Extract features
 			// (i.e., convert from DocumentClassification dataset to MulticlassClassification dataset).
 			try {
-				String[] cmd = {"java", "-jar", state.featureExtractorFilename,
+				String[] cmd = {"java", //getBasePath(state.featureExtractorFilename) + "\\java",
+						"-jar", state.featureExtractorFilename,
 						"extract", trainingDataFilename, gTempTrainDatashardForExtractedFeaturesFilename};
 				Runtime.getRuntime().exec(cmd).waitFor();
 			}
@@ -217,7 +219,8 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 
 			// Train the classifier on the extracted features.
 			try {
-				String[] cmd = {"java", "-jar", state.multiclassClassifierFilename,
+				String[] cmd = {"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
+						"-jar", state.multiclassClassifierFilename,
 						"learn", gTempTrainDatashardForExtractedFeaturesFilename};
 				Runtime.getRuntime().exec(cmd).waitFor();
 			}
@@ -260,7 +263,8 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 			// Extract features
 			// (i.e., convert from DocumentClassification dataset to MulticlassClassification dataset).
 			try {
-				String[] cmd = {"java", "-jar", state.featureExtractorFilename,
+				String[] cmd = {"java", //getBasePath(state.featureExtractorFilename) + "\\java",
+						"-jar", state.featureExtractorFilename,
 						"extract", testDataFilename, gTempTestDatashardForExtractedFeaturesFilename};
 				Runtime.getRuntime().exec(cmd).waitFor();
 			}
@@ -275,7 +279,8 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 
 			// Use the classifier to make predictions.
 			try {
-				String[] cmd = {"java", "-jar", state.multiclassClassifierFilename,
+				String[] cmd = {"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
+						"-jar", state.multiclassClassifierFilename,
 						"predict",
 							gTempTestDatashardForExtractedFeaturesFilename,
 							gTempPredictionsForMulticlassClassificationFilename};
@@ -326,6 +331,19 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 			final DocumentDataset predictionDocumentDataset
 				= new DocumentDataset(predictionsFilename, labelsToDocumentStringLists);
 			predictionDocumentDataset.saveStructure(predictionsFilename);
+		}
+	}
+	
+	// *******************************************************************************
+
+	protected static String getBasePath(String path) {
+		final File file = new File(path);
+		final String basePath = file.getParent();
+		if (basePath == null) {
+			return "";
+		}
+		else {
+			return basePath;
 		}
 	}
 }
