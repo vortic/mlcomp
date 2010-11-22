@@ -36,6 +36,21 @@ class Counter < Hash
   def argMax
     self.to_a.max_by {|a| a[1]}[0]
   end
+  
+  def sum
+    sum = 0
+    self.each_key do |key|
+      sum = sum + self[key]
+    end
+    sum
+  end
+
+  def normalize
+    total = self.sum
+    self.each_key do |key|
+      self[key] = self[key]/total.to_f
+    end
+  end
 end
 
 def sample(distribution)

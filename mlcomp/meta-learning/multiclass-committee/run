@@ -75,19 +75,18 @@ case cmd
     }
         
     #Update weights
+    puts "===== Ensemble-Learning: Update Weights ====="
     (0..(predictions[0].size-1)).each { |i|
       vectors = Counter.new()
       multiclass.each { |multiLearner|
         vectors[predictions[multiLearner][i]] += weights[multiLearner]
       }
       guess = vectors.argMax()
-      if guess != predictions[0][i] then
-        multiclass.each { |multiLearner|
-          if predictions[multiLearner][i] == predictions[0][i] then
-            weights[multiLearner] *= alpha
-          end
-        }
-      end
+      multiclass.each { |multiLearner|
+        if predictions[multiLearner][i] == predictions[0][i] then
+          weights[multiLearner] *= alpha
+        end
+      }
     }
   
     #Save Ensemble Weights

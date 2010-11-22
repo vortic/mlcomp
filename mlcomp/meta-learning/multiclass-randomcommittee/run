@@ -81,14 +81,12 @@ case cmd
         vectors[predictions[multiLearner][i]] += weights[multiLearner]
       }
       guess = vectors.argMax()
-      if guess != predictions[0][i] then
-        multiclass.each { |multiLearner|
-          if predictions[multiLearner][i] == predictions[0][i] then
-            weights[multiLearner] *= alpha
-          end
-        }
-        weights.normalize()
-      end
+      multiclass.each { |multiLearner|
+        if predictions[multiLearner][i] == predictions[0][i] then
+          weights[multiLearner] *= alpha
+        end
+      }
+      weights.normalize
     }
   
     #Save Ensemble Weights
