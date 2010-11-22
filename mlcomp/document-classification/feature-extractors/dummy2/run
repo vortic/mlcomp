@@ -1,0 +1,47 @@
+#! /usr/bin/env python
+
+#run with ./run extract <path to datashard> <output file>
+#remove savedstate with ./run cleanup
+
+import sys, glob
+from collections import defaultdict
+import cPickle as pickle
+from subprocess import call
+
+operation = sys.argv[1] #extract or cleanup
+if operation == 'cleanup':
+    call(['rm', 'dummy2savedstate.pickle'])
+    sys.exit(0)
+inpath = sys.argv[2] #path to datashard
+outf = sys.argv[3] #output file
+
+globstr = '%s/*/*' % inpath
+files = sorted(glob.glob(globstr))
+labels = [x[len(globstr)-4:x.rfind('/')] for x in files]
+
+def nextFeatureIndex():
+    global num
+    num = 'f' + str((int(num[1:]) + 1))
+    return num
+
+try: #load savedstate if present
+    num, featureMap, labelMap = pickle.load(open('dummy2savedstate.pickle', 'r'))
+    for label in ( set(labels) - set(labelMap.keys()) ):
+        labelMap[label] = max(labelMap.values()) + 1
+except:
+    num = 'f0'
+    featureMap = defaultdict(nextFeatureIndex)
+    labelMap = dict(zip(list(set(labels)), range(1, len(set(labels)) + 1)))
+
+outf = open(outf, 'w')
+
+for file, label in zip(files, labels):
+    words = open(file, 'r').read().strip().split(' ')
+    indices = [featureMap[word] for word in words]
+    values = [words.count(word) for word in words]
+    outf.write('%s %s\n' % (labelMap[label], ' '.join(['%s:%s' % (idx, val) for idx, val in zip(indices, values)])))
+
+outf.close()
+
+#savestate
+pickle.dump([num, featureMap, labelMap], open('dummy2savedstate.pickle', 'w'))
