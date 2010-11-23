@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+require 'yaml'
+tasktype = YAML::load(File.read "metadata")["task"]
+puts tasktype
+
+case action = ARGV[0]
+when "construct"
+  `javac -sourcepath ./ MainScript.java`
+when "learn"
+  infile = ARGV[1]
+  if tasktype == "Regression"
+    `java -classpath ./ MainScript learn #{infile}`
+  elsif tasktype == "BinaryClassification" || tasktype == "MulticlassClassification"
+    `./svmlight2arff.rb #{infile} train.arff` 
+    `java -classpath ./ MainScript learn train.arff`
+  else
+    puts "Not designed for this tasktype"
+    exit(0)
+  end
+when "predict"
+  infile = ARGV[1]
+  outfile = ARGV[2]
+  if tasktype == "Regression"
+    `java -classpath ./ MainScript predict #{infile} #{outfile}`
+  elsif tasktype == "BinaryClassification" || tasktype == "MulticlassClassification"
+    `./svmlight2arff.rb #{infile} test.arff`
+    `java -classpath ./ MainScript predict test.arff #{outfile}`
+  else
+    puts "Not designed for this tasktype"
+    exit(0)
+  end
+end	

@@ -1,0 +1,27 @@
+--- 
+tuneable: false
+name: KStar_weka_nominal
+language: java
+url: http://www.cs.waikato.ac.nz/ml/weka/
+task: MulticlassClassification
+description: |-
+  This programs is part of the WEKA classifier library. The code used to generate this program is from the java class 'weka/classifiers/lazy/KStar.java' from WEKA's libraries.
+  
+  The following description was taken from this classes JavaDoc information:
+  <br/><br/>
+  ---------------------
+  <br/>
+  
+  K* is an instance-based classifier, that is the class of a test instance is based upon the class of those training instances similar to it, as determined by some similarity function.  It differs from other instance-based learners in that it uses an entropy-based distance function.
+  
+  For more information on K*, see
+  
+  John G. Cleary, Leonard E. Trigg: K*: An Instance-based Learner Using an Entropic Distance Measure. In: 12th International Conference on Machine Learning, 108-114, 1995.
+  
+   <br/>
+  ---------------------
+  <br/><br/>
+  NOTE: This algorithm has no parameter tuning, it is using the default WEKA parameters<br/><br/>
+  
+  
+  NOTE: WEKA's Classifiers read a data in the .arff format. For Multiclass datasets, the SVMlight format converted to .arff multiclass format so they can be read by WEKA programs

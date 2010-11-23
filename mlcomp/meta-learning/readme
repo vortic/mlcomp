@@ -1,0 +1,36 @@
+Testing the Ensemble reduction:
+
+Folder Structure:
+       algs contains the ensemble codes
+       	    algs/multiclass-committee refers to the committee algorithm
+	    algs/multiclass-randomcommittee refers to the randomized committee algorithm
+       
+       supervised-learning contains the mlcomp backend for running supervised learning algorithms
+       	    supervised-learning/main contains the main interactor. This is what calls the learn and the predict
+	    supervised-learning/processor contains the dataset processor. This is not used when testing my code
+
+       discrete contains the evaluator for multiclass classification
+
+       multiclass-utils contains the dataset splitter for multiclass classification
+
+       vowel contains the dataset
+
+       everything else are multiclass programs that can be ensembled
+
+To Test the ensemble code:
+   First go into algs and choose which ensemble algorithm you will use
+   Run the following command:
+       ./run construct ../../464 ../../mira-python ../../minimalist ../../nn-ruby
+       #This step stores the paths to the multiclass algorithms that will be ensembled, so that they can be called upon when the ensemble code is run from supervised-learning
+   Change directory to supervised-learning/main
+   Run the following command:
+       ./run construct ../../algs/<ensemble algorithm> ../../vowel ../../multiclass-utils ../../discrete
+       #The first argument to construct is the path to the multiclass learner that supervised-learning will run. In this case it will be the ensemble algorithm you choose to run.
+       #The second argument is the path to the dataset. In this case it will be vowel. This can be any multiclass dataset.
+       #The third argument is the splitter, and the fourth argument is the evaluator. These must be multiclass utils and discrete.
+   Then run in supervised-learning/main:
+   	./run execute
+	#This will run the whole sequence of learn and predict
+   Once it is finished running, the error rate (if it didn't crash) will be stored in discrete/status
+
+Note: Each of the runs are executable in unix. The runs probably need to be changed if they are to be executed on a different environment (like windows).

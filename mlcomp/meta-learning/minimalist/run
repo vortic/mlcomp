@@ -1,0 +1,13 @@
+#!/bin/bash
+
+case $1 in
+construct)
+    make
+    ;;
+learn)
+    ./train 1000 < $2 > model.txt
+    ;;
+predict)
+    ./predict model.txt < $2 > $3
+    ;;
+esac

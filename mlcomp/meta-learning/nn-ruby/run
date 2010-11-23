@@ -1,0 +1,53 @@
+#!/usr/bin/ruby
+
+# Brain-dead nearest-neighbors implementation.
+# Slow as hell.
+# Percy Liang
+
+def readExamples(path)
+  IO.readlines(path).map { |line|
+    next if line =~ /^#/
+    y, *xl = line.split(/ /)
+    xh = {}
+    xl.each { |s| s =~ /^(\d+):(.+)$/ && xh[$1.to_i] = $2.to_f }
+    [y, xh]
+  }
+end
+
+def computeDist(xh1, xh2)
+  sum = 0
+  xh1.each_pair { |k,v| sum += (v - (xh2[k] || 0))**2 }
+  xh2.each_pair { |k,v| sum += (v - xh1[k])**2 if xh1.has_key?(k) }
+  sum
+end
+
+def predict(trainExamples, query_xh)
+  bestDist = nil
+  besty = nil
+  trainExamples.each { |y,xh|
+    dist = computeDist(query_xh, xh)
+    if bestDist == nil || dist < bestDist
+      bestDist = dist
+      besty = y
+    end
+  }
+  besty
+end
+
+cmd = ARGV.shift or raise "Missing command: learn | predict"
+case cmd
+  when 'learn' then
+    inPath = ARGV.shift or raise "Missing argument (input file)"
+    # Just save the labeled examples
+    system "cp #{inPath} train.dat"
+  when 'predict' then
+    inPath = ARGV.shift or raise "Missing argument (input file)"
+    outPath = ARGV.shift or raise "Missing argument (output file)"
+    trainExamples = readExamples("train.dat")
+    testExamples = readExamples(inPath)
+    out = open(outPath, "w")
+    testExamples.each { |_,xh|
+      out.puts predict(trainExamples, xh)
+    }
+    out.close
+end

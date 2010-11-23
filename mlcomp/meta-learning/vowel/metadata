@@ -1,0 +1,5 @@
+--- 
+name: vowel-context
+format: MulticlassClassification
+description: 990 examples, 13 features
+source: UCI Repository
