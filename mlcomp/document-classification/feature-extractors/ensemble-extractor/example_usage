@@ -1,0 +1,7 @@
+#! /bin/sh
+
+mkdir test_run
+cd test_run
+./../run construct ../../dummy1/ ../../dummy2/ ../../dummy3
+./../run extract ../../../data/sample/train/ train.txt
+./../run extract ../../../data/sample/test/ test.txt
