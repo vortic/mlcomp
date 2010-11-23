@@ -1,0 +1,6 @@
+--- 
+name: minimalist-boost
+construct: 
+task: MulticlassClassification
+description: Minimalist implementation of boostexter's "scored-text" threshold-based weak learners. Source code included.
+restricted_access: false

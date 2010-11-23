@@ -1,0 +1,11 @@
+#!/bin/bash
+
+case "$1" in
+learn)
+    python mira_train.py < "$2" > model
+    ;;
+predict)
+    python mira_predict.py model < "$2" > "$3"
+    ;;
+esac
+    

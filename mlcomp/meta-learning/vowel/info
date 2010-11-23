@@ -1,0 +1,5 @@
+numExamples	990
+origNumFeatures	13
+numFeatures	13
+numLabels	11
+format	MulticlassClassification

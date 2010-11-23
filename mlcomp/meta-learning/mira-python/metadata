@@ -1,0 +1,3 @@
+name: mira-python
+description: Very simple implementation of MIRA (aka PA-II) averaged perceptron in python
+task: MulticlassClassification
