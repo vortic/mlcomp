@@ -30,26 +30,39 @@ sampleDataset: semi-supervised-multiclass-sample
 utilsProgram: semi-supervised-multiclass-utils
 evaluatorProgram: semi-supervised-multiclass-utils
 datasetFields:
-  - name: "#examples"
+  - name: "#train"
     type: integer
     value: train/numExamples
     description: Number of training examples.
-  - name: "#numLabeledExamples"
+  - name: "#labeledTrain"
     type: integer
     value: train/numLabeledExamples
     description: Number of labeled training examples.
-  - name: "#numUnlabeledExamples"
+  - name: "#numUnlabeledTrain"
     type: integer
     value: train/numUnlabeledExamples
     description: Number of unlabeled training examples.
+  - name: "#trainLabels"
+    type: integer
+    value: train/numLabels
+    description: Number of output classes (labels) from training examples.
+    
   - name: "#test"
     type: integer
     value: test/numExamples
     description: Number of test examples.
-  - name: "#labels"
+  - name: "#labeledTest"
     type: integer
-    value: train/numLabels
-    description: Number of output classes (labels).
+    value: test/numLabeledExamples
+    description: Number of labeled test examples.
+  - name: "#numUnlabeledTest"
+    type: integer
+    value: test/numUnlabeledExamples
+    description: Number of unlabeled test examples.
+  - name: "#testLabels"
+    type: integer
+    value: test/numLabels
+    description: Number of output classes (labels) from test examples.
 runFields:
   - name: Learn time
     type: time

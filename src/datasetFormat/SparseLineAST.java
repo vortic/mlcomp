@@ -106,6 +106,14 @@ public class SparseLineAST {
 				return false;
 			}
 		}
+		
+		public int getNumClassIndices() {
+			return myClassIndices.size();
+		}
+		
+		public Set<Integer> getClassIndices() {
+			return Collections.unmodifiableSet(myClassIndices);
+		}
 	}
 	
 	public static class SemiSupervisedTrainingValidator implements UnaryPredicate<String> {
@@ -137,6 +145,10 @@ public class SparseLineAST {
 					return false;
 				}
 			}
+		}
+		
+		public UnaryPredicate<String> getBase() {
+			return myLabeledOutputValidator;
 		}
 		
 		public boolean datasetIsValid() {

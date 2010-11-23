@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,43 +23,55 @@ import datasetFormat.SparseLineAST;
  * @author Eugene Ma
  */
 public class RunForSemiSupervisedLearningDomain {
+	protected static final boolean gAppendToStatusFileFlag = true;
 
 	public static final String gStatusFilename = "status";
-	public static final double gFractionOfLabeledInstancesForTraining = 0.4;
+	public static final double gFractionOfLabeledInstancesForTraining = 0.7;
 
 	// *******************************************************************************
+	
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			throw new RuntimeException("The arguments list must not be empty!");
-		} else {
+		}
+		else {
 			final String command = args[0];
-			if (command.equals("inspect")) {
+			if (command.equals("construct")) {
+				// Do nothing.
+			}
+			else if (command.equals("inspect")) {
 				inspect(args);
-			} else if (command.equals("split")) {
+			}
+			else if (command.equals("split")) {
 				split(args);
-			} else if (command.equals("stripLabels")) {
+			}
+			else if (command.equals("stripLabels")) {
 				stripLabels(args);
-			} else if (command.equals("evaluate")) {
+			}
+			else if (command.equals("evaluate")) {
 				evaluate(args);
-			} else {
-				throw new RuntimeException(String.format(
-						"The command \"%s\" is not recognized.", command));
+			}
+			else {
+				throw new RuntimeException(String.format("The command \"%s\" is not recognized.", command));
 			}
 		}
 	}
 
 	// *******************************************************************************
+	
 	public static void inspect(String[] args) {
-		if (args.length != 3) {
-			throw new RuntimeException(
-					"The datashard path must be the second argument.");
-		} else {
+		if (args.length != 2) {
+			throw new RuntimeException("The datashard path must be the second argument. "
+					+ "The arguments are: " + Arrays.asList(args));
+		}
+		else {
 			final String datasetPath = args[1];
 
-			// The output for instances is different for training and testing.
+			// Instance outputs can an be an integer >= -1 or "u".
+			final SparseLineAST.BinaryOrMulticlassValidator baseOutputValidator
+				= new SparseLineAST.BinaryOrMulticlassValidator();
 			final SparseLineAST.SemiSupervisedTrainingValidator outputValidator
-				= new SparseLineAST.SemiSupervisedTrainingValidator(
-					new SparseLineAST.NumericValidator());
+				= new SparseLineAST.SemiSupervisedTrainingValidator(baseOutputValidator);
 
 			try {
 				final Map.Entry<List<SparseLineAST>, Integer> instancesToMaxFeatureIndex
@@ -68,8 +81,9 @@ public class RunForSemiSupervisedLearningDomain {
 
 				FileOutputStream outputStream;
 				try {
-					outputStream = new FileOutputStream(new File(gStatusFilename), true);
-				} catch (FileNotFoundException x) {
+					outputStream = new FileOutputStream(new File(gStatusFilename), gAppendToStatusFileFlag);
+				}
+				catch (FileNotFoundException x) {
 					throw new RuntimeException(String.format("Cannot find the file \"%s\".", gStatusFilename));
 				}
 				final OutputStreamWriter outputWriter = new OutputStreamWriter(outputStream);
@@ -84,33 +98,40 @@ public class RunForSemiSupervisedLearningDomain {
 					out.write("path: " + datasetPath);
 					out.newLine();
 
-					// Number of instances
+					// Number of instances.
 					out.write("numExamples: " + instancesToMaxFeatureIndex.getKey().size());
 					out.newLine();
 
-					// Number of labeled instances
+					// Number of labeled instances.
 					out.write("numLabeledExamples: " + outputValidator.getNumLabeledInstances());
 					out.newLine();
 
-					// Number of unlabeled instances
+					// Number of unlabeled instances.
 					out.write("numUnlabeledExamples: " + outputValidator.getNumUnlabeledInstances());
 					out.newLine();
 
+					// Number of labels.
+					out.write("numLabels: " + baseOutputValidator.getNumClassIndices());
+					out.newLine();
+					
 					// Max feature index.
 					out.write("maxFeatureIndex: " + instancesToMaxFeatureIndex.getValue());
 					out.newLine();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					throw new RuntimeException(
 							String.format("An error occurred while writing to file \"%s\".", gStatusFilename));
 				}
 
 				try {
 					out.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					throw new RuntimeException(
 							String.format("Error while closing the file \"%s\".", gStatusFilename));
 				}
-			} catch (RuntimeException x) {
+			}
+			catch (RuntimeException x) {
 				// FIXME: Need to tell the difference between an error and not
 				// recognizing the format.
 				System.out.print("An error was encountered: " + x.toString());
@@ -122,13 +143,15 @@ public class RunForSemiSupervisedLearningDomain {
 	}
 
 	// *******************************************************************************
+	
 	public static void split(String[] args) {
 		if (args.length != 4) {
 			throw new RuntimeException(
 					"The raw datashard path must be the second argument, "
 							+ "the train datashard path must be the third argument, "
 							+ "and the test datashard path must be the fourth argument.");
-		} else {
+		}
+		else {
 			final String rawDatashardPath = args[1];
 			final String trainDatashardPath = args[2];
 			final String testDatashardPath = args[3];
@@ -166,7 +189,8 @@ public class RunForSemiSupervisedLearningDomain {
 			for (int i = 0; i < labeledInstances.size(); ++i) {
 				if (i < firstTestIndex) {
 					trainingSet.add(labeledInstances.get(i));
-				} else {
+				}
+				else {
 					testSet.add(labeledInstances.get(i));
 				}
 			}
@@ -179,6 +203,7 @@ public class RunForSemiSupervisedLearningDomain {
 	}
 
 	// *******************************************************************************
+	
 	protected static void stripLabels(String[] args) {
 		if (args.length != 3) {
 			throw new RuntimeException(
@@ -217,6 +242,7 @@ public class RunForSemiSupervisedLearningDomain {
 	}
 
 	// *******************************************************************************
+	
 	protected static void evaluate(String[] args) {
 		if (args.length != 3) {
 			throw new RuntimeException(
@@ -239,8 +265,7 @@ public class RunForSemiSupervisedLearningDomain {
 			// Set up status file to append.
 			FileOutputStream outputStream;
 			try {
-				outputStream = new FileOutputStream(new File(gStatusFilename),
-						true);
+				outputStream = new FileOutputStream(new File(gStatusFilename), gAppendToStatusFileFlag);
 			} catch (FileNotFoundException x) {
 				throw new RuntimeException(String.format(
 						"Cannot find the file \"%s\".", gStatusFilename));

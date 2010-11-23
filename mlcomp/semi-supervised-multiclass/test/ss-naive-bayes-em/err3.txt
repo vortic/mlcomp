@@ -1,0 +1,21 @@
+Loaded hyperparameter = 0.010000. Using k = 0.000100 for smoothing.
+There are 284 labeled instances.
+Trained on 284 labeled instances.
+Log likelihood for iteration 0: -450958.968586
+Log likelihood for iteration 1: -169254.089747
+Log likelihood for iteration 2: -168866.110575
+Log likelihood for iteration 3: -167664.571619
+Log likelihood for iteration 4: -166567.710030
+Log likelihood for iteration 5: -166558.181666
+Log likelihood for iteration 6: -166552.803596
+Log likelihood for iteration 7: -166538.501691
+Log likelihood for iteration 8: -166526.517842
+Log likelihood for iteration 9: -166523.366071
+Log likelihood for iteration 10: -166522.063495
+Log likelihood for iteration 11: -166480.585819
+Log likelihood for iteration 12: -166428.992147
+Log likelihood for iteration 13: -166428.908985
+Log likelihood for iteration 14: -166428.908985
+Log likelihood for iteration 15: -166428.908985
+Log likelihood of the training data has converged.
+Learned model saved to "learnedModel.ser".
