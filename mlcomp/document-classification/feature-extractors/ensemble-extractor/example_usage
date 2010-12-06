@@ -2,6 +2,10 @@
 
 mkdir test_run
 cd test_run
-./../run construct ../../dummy1/ ../../dummy2/ ../../dummy3
-./../run extract ../../../data/sample/train/ train.txt
-./../run extract ../../../data/sample/test/ test.txt
+cp ../* .
+cp -r ../../dummy1 .
+cp -r ../../dummy2 .
+cp -r ../../dummy3 .
+./run construct dummy1 dummy2 dummy3
+./run extract ../../../data/sample/train/ train.txt
+./run extract ../../../data/sample/test/ test.txt

@@ -2,17 +2,21 @@
 
 #./run construct extractor1 extractor2 ... extractorN
 #./run extract <path to datashard> <output file>
-#./run cleanup (removes savedstate of all extractors as well as this programs')
-
-keep_around_results_of_extractors = False #for debugging
 
 import sys
 from subprocess import call
+from os import chdir, getcwd
 from collections import defaultdict
 import cPickle as pickle
 
 def saveState():
     pickle.dump([extractors, num, featureMaps], open('ensemble-extractor-savedstate.pickle', 'w'))
+    #human readable savestate
+    f = open('ensemble-extractor-savedstate.txt', 'w')
+    f.write('extractors = %s\n' % extractors)
+    f.write('num = %s\n' % num)
+    f.write('featureMaps = %s\n' % [sorted(x.items()) for x in featureMaps])
+    f.close()
 
 def nextInt():
     global num
@@ -30,28 +34,24 @@ if operation == 'construct':
     saveState()
     sys.exit(0)
 
+assert(operation == 'extract')
+
 #load saved state
 extractors, num, featureMaps = pickle.load(open('ensemble-extractor-savedstate.pickle', 'r'))
-
-if operation == 'cleanup':
-    call(['rm', 'ensemble-extractor-savedstate.pickle'])
-    for i in range(len(extractors)):
-        call(['./'+extractors[i]+'/run', 'cleanup'])    
-    sys.exit(0)
-
-assert(operation == 'extract')
 inpath = args[2] #path of datashard
 outf = args[3] #output file
 
+cwd = getcwd()
+
 extractions = []
-for i in range(len(extractors)):
-    if call(['./'+extractors[i]+'/run', 'extract', inpath, '%s.tmp' % i]) != 0:
-        print extractors[i], 'failed'
+for i, extractor in enumerate(extractors):
+    chdir(extractor)
+    if call(['./run', 'extract', cwd + '/' + inpath, '%s.tmp' % i]) != 0:
+        print extractor, 'failed'
         print 'exiting'
         sys.exit(-1)
     extractions.append([x.strip().split(' ') for x in open('%s.tmp' % i, 'r').readlines()])
-    if not keep_around_results_of_extractors:
-        call(['rm', '%s.tmp' % i])
+    chdir(cwd)
 
 outf = open(outf, 'w')
 for i in range(len(extractions[0])):
