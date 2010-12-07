@@ -47,7 +47,7 @@ end
 
 #Not done yet
 def interact(learner, datashard, outPath)
-  IO.popen("./" + learner, "r+") do |pipe|
+  IO.popen("./" + learner + " learnAndPredict", "r+") do |pipe|
     File.open(datashard, "r") do |file|
       File.open(outPath, "w") do |outFile|
         file.each_line do |line|
