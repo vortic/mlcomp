@@ -250,21 +250,27 @@ public class RunForDiscretizingNaiveBayesClassifier {
 				classifier.initializeFromFileData(loadTrainedModelFileData());
 
 				// Make predictions.
-				int numCorrectPredictions = 0;
+				//int numCorrectPredictions = 0;	// TODO: Remove debug code.
 				List<Integer> predictedClassIndices = new ArrayList<Integer>(instances.size());
 				for (SparseLineAST instance : instances) {
 					final int predictedClassIndex = classifier.getPrediction(instance);
 					predictedClassIndices.add(predictedClassIndex);
 					
+					/*
+					// TODO: Remove debug code.
 					final int correctClassIndex = Integer.parseInt(instance.getOutput());
 					if (predictedClassIndex == correctClassIndex) {
 						numCorrectPredictions += 1;
 					}
+					//*/
 				}
 				
+				/*
+				// TODO: Remove debug code.
 				System.out.println(String.format("%d of %d predicted correctly (%f).",
 						numCorrectPredictions, predictedClassIndices.size(),
 						numCorrectPredictions / (double) predictedClassIndices.size()));
+				//*/
 				
 				// Save the predictions to file.
 				final String predictionsFilename = args[2];
