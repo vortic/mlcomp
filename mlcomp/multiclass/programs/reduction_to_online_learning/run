@@ -1,0 +1,61 @@
+#! /usr/bin/env python
+
+#./run construct online_learning_program
+#./run learn path/to/training/datashard
+#./run predict path/to/test/datashard path/to/predictions
+
+import sys
+from subprocess import Popen, PIPE
+from os import getcwd
+
+def saveClassifier(classifier):
+    f = open('classifier.txt', 'w')
+    f.write(classifier)
+    f.close()    
+
+def getClassifier():
+    return open('classifier.txt', 'r').read().strip()    
+
+def saveTrainingData(training_data):
+    f = open('trainingdata.txt', 'w')
+    f.write(training_data)
+    f.close()
+
+def getTrainingData():
+    return open('trainingdata.txt', 'r').read().strip()
+
+def constructor():
+    classifier = sys.argv[2]
+    saveClassifier(classifier)
+
+def learner():
+    train_data = sys.argv[2]
+    saveTrainingData(train_data)
+
+def predicter():
+    classifier = getClassifier()
+    cwd = getcwd()
+    train_data_f = cwd + '/' + getTrainingData()
+    test_data_f = cwd + '/' + sys.argv[2]
+    path_to_predictions = cwd + '/' + sys.argv[3]
+    
+    #train
+    p = Popen('./run', stdin=PIPE, stdout=PIPE, shell=True, cwd=classifier)
+    for line in open(train_data_f, 'r').readlines():
+        label, features = line.strip().split(' ', 1)
+        p.stdin.write(features+'\n')
+        p.stdin.write(label+'\n')
+    
+    #test
+    outf = open(path_to_predictions, 'w')
+    for line in open(test_data_f, 'r').readlines():
+        features = line.strip()
+        p.stdin.write(features+'\n')
+        guess = p.stdout.readline().strip()
+        outf.write('%s\n' % guess)
+        p.stdin.write('u\n') #unlabeled example
+    p.communicate()
+    outf.close()
+
+actions = {'construct': constructor, 'learn': learner, 'predict': predicter}
+actions[sys.argv[1]]()

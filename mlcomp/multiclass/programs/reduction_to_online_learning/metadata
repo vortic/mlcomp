@@ -1,0 +1,4 @@
+name: multiclass_to_online
+description: Reduction from multiclass classification to online learning.
+task: MulticlassClassification
+construct: Program[OnlineLearning]
