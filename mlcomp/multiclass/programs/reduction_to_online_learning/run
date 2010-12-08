@@ -26,6 +26,8 @@ def getTrainingData():
 
 def constructor():
     classifier = sys.argv[2]
+    p = Popen('./run construct', shell=True, cwd=classifier)
+    p.communicate()
     saveClassifier(classifier)
 
 def learner():
@@ -40,7 +42,7 @@ def predicter():
     path_to_predictions = cwd + '/' + sys.argv[3]
         
     #train
-    p = Popen('./run', stdin=PIPE, stdout=PIPE, shell=True, cwd=classifier)
+    p = Popen('./run learnAndPredict', stdin=PIPE, stdout=PIPE, shell=True, cwd=classifier)
     for line in open(train_data_f, 'r').readlines():
         label, features = line.strip().split(' ', 1)
         p.stdin.write(features+'\n')
