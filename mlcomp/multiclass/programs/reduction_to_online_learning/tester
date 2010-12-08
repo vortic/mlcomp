@@ -5,9 +5,10 @@ cd test_run
 cp ../* .
 cp -r ../../../../online-learning-algorithms/online-perceptron .
 cp -r ../../../data/sample .
-egrep -o "^[0-9]+" sample/test > sample/test.labels
-egrep -o "[0-9]+\:.+" sample/test > sample/test.features
+#egrep -o "^[0-9]+" sample/test > sample/test.labels
+#egrep -o "[0-9]+\:.+" sample/test > sample/test.features
 
 ./run construct online-perceptron/
 ./run learn sample/train
-./run predict sample/test.features guesses.txt
+#./run predict sample/test.features guesses.txt
+./run predict sample/test guesses.txt

@@ -1,4 +1,4 @@
-name: multiclass_to_online
-description: Reduction from multiclass classification to online learning.
+name: multiclass-batch-to-online
+description: Online-to-batch conversion for multiclass classification.
 task: MulticlassClassification
-construct: Program[OnlineLearning]
+construct: onlineLearner:Program[OnlineLearningMulticlass]
