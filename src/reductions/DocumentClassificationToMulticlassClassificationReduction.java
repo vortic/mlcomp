@@ -23,6 +23,10 @@ import datasetFormat.SparseLineAST;
  * @author Eugene Ma
  */
 public class DocumentClassificationToMulticlassClassificationReduction {
+	// "Conditional compiling": When set to true,
+	// the multiclass classifier is invoked with MLcomp's "run" instead of "java -jar".
+	protected static final boolean gUsingRunNotJavaDashJarFlag = true;
+	
 	//protected static final String gHyperparameterFilename = "hyperparameter";	// TODO: Include?
 	
 	protected static final String gStateFilename = "state.ser";
@@ -175,9 +179,18 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 			// Set the hyperparameter of the MulticlassClassification classifier.
 			final String hyperparameter = args[1];
 			try {
-				String[] cmd = {"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
-						"-jar", getFilename(state.multiclassClassifierFilename),
-						"setHyperparameter", hyperparameter};
+				String[] cmd;
+				if (gUsingRunNotJavaDashJarFlag) {
+					cmd = new String[]{"run",
+							getFilename(state.multiclassClassifierFilename),
+							"setHyperparameter", hyperparameter};
+				}
+				else {
+					cmd = new String[]{"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
+							"-jar", getFilename(state.multiclassClassifierFilename),
+							"setHyperparameter", hyperparameter};
+				}
+				
 				Runtime.getRuntime().exec(cmd, null, getBasePathFile(state.multiclassClassifierFilename)).waitFor();
 			}
 			catch (IOException e) {
@@ -207,11 +220,22 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 			// Extract features
 			// (i.e., convert from DocumentClassification dataset to MulticlassClassification dataset).
 			try {
-				String[] cmd = {"java", //getBasePath(state.featureExtractorFilename) + "\\java",
-						"-jar", getFilename(state.featureExtractorFilename),
-						"extract",
-						thisDirectory.getAbsolutePath() + "\\" + trainingDataFilename,
-						thisDirectory.getAbsolutePath() + "\\" + gTempTrainDatashardForExtractedFeaturesFilename};
+				String[] cmd;
+				if (gUsingRunNotJavaDashJarFlag) {
+					cmd = new String[]{"run",
+							getFilename(state.featureExtractorFilename),
+							"extract",
+							thisDirectory.getAbsolutePath() + "\\" + trainingDataFilename,
+							thisDirectory.getAbsolutePath() + "\\" + gTempTrainDatashardForExtractedFeaturesFilename};
+				}
+				else {
+					cmd = new String[]{"java", //getBasePath(state.featureExtractorFilename) + "\\java",
+							"-jar", getFilename(state.featureExtractorFilename),
+							"extract",
+							thisDirectory.getAbsolutePath() + "\\" + trainingDataFilename,
+							thisDirectory.getAbsolutePath() + "\\" + gTempTrainDatashardForExtractedFeaturesFilename};
+				}
+				
 				Runtime.getRuntime().exec(cmd, null, getBasePathFile(state.featureExtractorFilename)).waitFor();
 			}
 			catch (IOException e) {
@@ -225,10 +249,20 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 
 			// Train the classifier on the extracted features.
 			try {
-				String[] cmd = {"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
-						"-jar", getFilename(state.multiclassClassifierFilename),
-						"learn",
-						thisDirectory.getAbsolutePath() + "\\" + gTempTrainDatashardForExtractedFeaturesFilename};
+				String[] cmd;
+				if (gUsingRunNotJavaDashJarFlag) {
+					cmd = new String[]{"run",
+							getFilename(state.multiclassClassifierFilename),
+							"learn",
+							thisDirectory.getAbsolutePath() + "\\" + gTempTrainDatashardForExtractedFeaturesFilename};
+				}
+				else {
+					cmd = new String[]{"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
+							"-jar", getFilename(state.multiclassClassifierFilename),
+							"learn",
+							thisDirectory.getAbsolutePath() + "\\" + gTempTrainDatashardForExtractedFeaturesFilename};
+				}
+				
 				Runtime.getRuntime().exec(cmd, null, getBasePathFile(state.multiclassClassifierFilename)).waitFor();
 			}
 			catch (IOException e) {
@@ -272,11 +306,24 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 			// Extract features
 			// (i.e., convert from DocumentClassification dataset to MulticlassClassification dataset).
 			try {
-				String[] cmd = {"java", //getBasePath(state.featureExtractorFilename) + "\\java",
-						"-jar", getFilename(state.featureExtractorFilename),
-						"extract",
-						thisDirectory.getAbsolutePath() + "\\" + testDataFilename,
-						thisDirectory.getAbsolutePath() + "\\" + gTempTestDatashardForExtractedFeaturesFilename};
+				String[] cmd;
+				if (gUsingRunNotJavaDashJarFlag) {
+					cmd = new String[]{"run",
+							getFilename(state.featureExtractorFilename),
+							"extract",
+							thisDirectory.getAbsolutePath() + "\\" + testDataFilename,
+							thisDirectory.getAbsolutePath() + "\\" + gTempTestDatashardForExtractedFeaturesFilename};
+
+				}
+				else {
+					cmd = new String[]{"java", //getBasePath(state.featureExtractorFilename) + "\\java",
+							"-jar", getFilename(state.featureExtractorFilename),
+							"extract",
+							thisDirectory.getAbsolutePath() + "\\" + testDataFilename,
+							thisDirectory.getAbsolutePath() + "\\" + gTempTestDatashardForExtractedFeaturesFilename};
+
+				}
+				
 				Runtime.getRuntime().exec(cmd, null, getBasePathFile(state.featureExtractorFilename)).waitFor();
 			}
 			catch (IOException e) {
@@ -290,11 +337,22 @@ public class DocumentClassificationToMulticlassClassificationReduction {
 
 			// Use the classifier to make predictions.
 			try {
-				String[] cmd = {"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
-						"-jar", getFilename(state.multiclassClassifierFilename),
-						"predict",
-						thisDirectory.getAbsolutePath() + "\\" + gTempTestDatashardForExtractedFeaturesFilename,
-						thisDirectory.getAbsolutePath() + "\\" + gTempPredictionsForMulticlassClassificationFilename};
+				String[] cmd;
+				if (gUsingRunNotJavaDashJarFlag) {
+					cmd = new String[]{"run",
+							getFilename(state.multiclassClassifierFilename),
+							"predict",
+							thisDirectory.getAbsolutePath() + "\\" + gTempTestDatashardForExtractedFeaturesFilename,
+							thisDirectory.getAbsolutePath() + "\\" + gTempPredictionsForMulticlassClassificationFilename};
+				}
+				else {
+					cmd = new String[]{"java", //getBasePath(state.multiclassClassifierFilename) + "\\java",
+							"-jar", getFilename(state.multiclassClassifierFilename),
+							"predict",
+							thisDirectory.getAbsolutePath() + "\\" + gTempTestDatashardForExtractedFeaturesFilename,
+							thisDirectory.getAbsolutePath() + "\\" + gTempPredictionsForMulticlassClassificationFilename};
+				}
+				
 				Runtime.getRuntime().exec(cmd, null, getBasePathFile(state.multiclassClassifierFilename)).waitFor();
 			}
 			catch (IOException e) {

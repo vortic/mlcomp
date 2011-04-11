@@ -293,19 +293,35 @@ public class RunForSemiSupervisedLearningDomain {
 					int incorrect = 0;
 					int total = 0;
 					for (int i = 0; i < correctLabels.size(); i++) {
-						int correctLabel = Integer.parseInt(correctLabels.get(i));
-						int predictedLabel = Integer.parseInt(predictedLabels.get(i));
-						if (correctLabel == predictedLabel) {
-							correct++;
-						} else {
-							incorrect++;
+						// FIXME? Quick fix for "u" labels: just ignore them.
+						try {
+							int correctLabel = Integer.parseInt(correctLabels.get(i));
+							int predictedLabel = Integer.parseInt(predictedLabels.get(i));
+							if (correctLabel == predictedLabel) {
+								correct++;
+							} else {
+								incorrect++;
+							}
+							total++;
 						}
-						total++;
+						catch (NumberFormatException x) {
+							System.out.println("Warning: NumberFormatException encountered for instance at index "
+									+ i + " while evaluating predictions.");
+						}
 					}
 					status.write("---\n");
 					status.write("numErrors: " + incorrect + "\n");
 					status.write("numExamples: " + total + "\n");
-					status.write("errorRate: " + incorrect / (double) total + "\n");
+					
+					// Print the error rate, taking care to handle the special case where the total is zero.
+					String errorRateString = "errorRate: ";
+					if (total == 0) {
+						errorRateString += "0\n";
+					}
+					else {
+						errorRateString += incorrect / (double) total + "\n";
+					}
+					status.write(errorRateString);
 				}
 			} finally {
 				dataShard.close();
